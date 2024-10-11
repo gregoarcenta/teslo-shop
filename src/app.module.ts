@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { joiValidationSchema } from './config/joi.validation';
+import { envValidationSchema } from './config/env.validation';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ validationSchema: joiValidationSchema }),
+    ConfigModule.forRoot({ validationSchema: envValidationSchema }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
