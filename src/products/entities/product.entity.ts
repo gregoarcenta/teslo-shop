@@ -3,8 +3,11 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { ProductImage } from './product-image.entity';
 
 @Entity()
 export class Product {
@@ -35,7 +38,10 @@ export class Product {
   @Column('text', { nullable: false, array: true, default: [] })
   tags: string[];
 
-  // images
+  @OneToMany(() => ProductImage, (productImage) => productImage.product, {
+    eager: true,
+  })
+  images?: ProductImage[];
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -46,7 +52,7 @@ export class Product {
     this.convertToSlug(this.slug);
   }
 
-  convertToSlug(value: string) {
+  private convertToSlug(value: string) {
     this.slug = value
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
