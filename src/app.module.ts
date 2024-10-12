@@ -3,6 +3,7 @@ import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from './config/env.validation';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { envValidationSchema } from './config/env.validation';
       synchronize: true,
     }),
     ProductsModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],

@@ -145,7 +145,16 @@ export class ProductsService {
     }
   }
 
-  getValidSlug(originalProduct: Product, newProduct: Product) {
+  async removeAll() {
+    const query = this.productRepository.createQueryBuilder();
+    try {
+      return await query.delete().where({}).execute();
+    } catch (e) {
+      this.handleExceptions(e);
+    }
+  }
+
+  private getValidSlug(originalProduct: Product, newProduct: Product) {
     const originalTitle = originalProduct['title'];
     const originalSlug = originalProduct['slug'];
     const newTitle = newProduct['title'];
