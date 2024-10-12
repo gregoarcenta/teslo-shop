@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { ILike, Repository } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -25,6 +25,7 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
+    private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
   ) {
     this.limit = this.configService.get('DEFAULT_LIMIT');
@@ -98,20 +99,39 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    try {
-      const originalProduct = await this.findOne(id);
-      
-      let productDto = this.buildDtoCreateAndUpdate(updateProductDto);
-      productDto.slug = this.getValidSlug(originalProduct, productDto);
+    // Busca el producto original
+    const originalProduct = await this.findOne(id);
 
-      const product = await this.productRepository.preload({
-        id,
-        ...productDto,
-      });
-      await this.productRepository.save(product);
-      return product;
+    // Construye un nuevo dto con las instacias de las imagenes
+    let productDto = this.buildDtoCreateAndUpdate(updateProductDto);
+
+    // Asigna el id y un slug valido para actualizar
+    productDto.slug = this.getValidSlug(originalProduct, productDto);
+    productDto.id = id;
+
+    // Carga la instancia del producto a actualizar
+    const product = await this.productRepository.preload(productDto);
+
+    // Crea un QueryRunner para iniciar una transaccion
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // Si existen imagenes nuevas se eliminan las anteriores
+      if (product.images) {
+        await queryRunner.manager.delete(ProductImage, { product: id });
+      }
+      // Actualiza el producto
+      await queryRunner.manager.save(product);
+      // Commit de la transaccion
+      await queryRunner.commitTransaction();
+
+      return this.findOnePlain(id);
     } catch (e) {
+      await queryRunner.rollbackTransaction();
       this.handleExceptions(e);
+    } finally {
+      await queryRunner.release();
     }
   }
 
