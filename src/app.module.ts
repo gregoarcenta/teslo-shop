@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from './config/env.validation';
 import { SeedModule } from './seed/seed.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SeedModule } from './seed/seed.module';
     }),
     ProductsModule,
     SeedModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],
