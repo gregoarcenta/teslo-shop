@@ -1,23 +1,16 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, ILike, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { Product } from './entities/product.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { isUUID } from 'class-validator';
 import { ProductImage } from './entities';
+import { HandlerException } from '../common/exceptions/handler.exception';
 
 @Injectable()
 export class ProductsService {
-  private readonly logger = new Logger('ProductsService');
   private readonly limit: number;
 
   constructor(
@@ -27,20 +20,18 @@ export class ProductsService {
     private readonly productImageRepository: Repository<ProductImage>,
     private readonly dataSource: DataSource,
     private readonly configService: ConfigService,
+    private readonly handlerException: HandlerException,
   ) {
     this.limit = this.configService.get('DEFAULT_LIMIT');
   }
 
   async create(createProductDto: CreateProductDto) {
+    const productDto = this.buildDtoCreateAndUpdate(createProductDto);
     try {
-      const productDto = this.buildDtoCreateAndUpdate(createProductDto);
-
       const product = this.productRepository.create(productDto);
-
-      await this.productRepository.save(product);
-      return product;
-    } catch (e) {
-      this.handleExceptions(e);
+      return await this.productRepository.save(product);
+    } catch (err) {
+      this.handlerException.handlerDBException(err);
     }
   }
 
@@ -59,18 +50,18 @@ export class ProductsService {
         ...productProperties,
         images: images.map((img) => img.url),
       }));
-    } catch (e) {
-      this.handleExceptions(e);
+    } catch (err) {
+      this.handlerException.handlerDBException(err);
     }
   }
 
   private async findOne(term: string) {
+    const id = isUUID(term) ? term : null;
+    let product: Product;
     try {
-      const id = isUUID(term) ? term : null;
-      const product = await this.productRepository.findOne({
+      product = await this.productRepository.findOne({
         where: [{ id }, { title: ILike(term) }, { slug: term }],
       });
-
       /*const queryBuilder = this.productsRepository.createQueryBuilder('prod');
         product = await queryBuilder
           .where('LOWER(title) = :title or slug = :slug', {
@@ -80,13 +71,13 @@ export class ProductsService {
           .leftJoinAndSelect('prod.images', 'prodImages')
           .getOne()
       }*/
-
-      if (!product) throw new NotFoundException(`Product ${term} not found`);
-
-      return product;
-    } catch (e) {
-      this.handleExceptions(e);
+    } catch (err) {
+      this.handlerException.handlerDBException(err);
     }
+
+    if (!product) throw new NotFoundException(`Product ${term} not found`);
+
+    return product;
   }
 
   async findOnePlain(term: string) {
@@ -127,21 +118,21 @@ export class ProductsService {
       await queryRunner.commitTransaction();
 
       return this.findOnePlain(id);
-    } catch (e) {
+    } catch (err) {
       await queryRunner.rollbackTransaction();
-      this.handleExceptions(e);
+      this.handlerException.handlerDBException(err);
     } finally {
       await queryRunner.release();
     }
   }
 
   async remove(id: string) {
+    const product = await this.findOne(id);
     try {
-      const product = await this.findOne(id);
       const productRemoved = await this.productRepository.remove(product);
       return `Product ${productRemoved.title} has been removed`;
-    } catch (e) {
-      this.handleExceptions(e);
+    } catch (err) {
+      this.handlerException.handlerDBException(err);
     }
   }
 
@@ -149,8 +140,8 @@ export class ProductsService {
     const query = this.productRepository.createQueryBuilder();
     try {
       return await query.delete().where({}).execute();
-    } catch (e) {
-      this.handleExceptions(e);
+    } catch (err) {
+      this.handlerException.handlerDBException(err);
     }
   }
 
@@ -179,16 +170,5 @@ export class ProductsService {
       );
     }
     return product;
-  }
-
-  private handleExceptions(error: any) {
-    if (!!error.response) throw error;
-
-    if (error.code == 23505) throw new BadRequestException(error.detail);
-
-    this.logger.error(error);
-    throw new InternalServerErrorException(
-      'Unexpected error occurred - check server logs',
-    );
   }
 }
