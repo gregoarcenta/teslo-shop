@@ -11,4 +11,5 @@ export const envValidationSchema = Joi.object({
   CLOUDINARY_NAME:Joi.string().required(),
   CLOUDINARY_API_KEY:Joi.string().required(),
   CLOUDINARY_API_SECRET:Joi.string().required(),
+  JWT_SECRET:Joi.string().required(),
 });
