@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Get, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignUpDto, SignInDto } from './dto';
-import { AuthGuard } from "@nestjs/passport";
+import { SignInDto, SignUpDto } from './dto';
+import { User } from './entities/user.entity';
+import { Auth, GetUser, Role } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -17,12 +18,9 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
-  @UseGuards(AuthGuard())
-  @Get('logout')
-  logout() {
-    return {
-      ok: true,
-      message: 'Logout',
-    };
+  @Get('private')
+  @Auth()
+  privateRoute2(@GetUser() user: User) {
+    return { user };
   }
 }
