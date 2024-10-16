@@ -24,8 +24,8 @@ export class AuthService {
         password: bcrypt.hashSync(password, 10),
       });
       await this.userRepository.save(user);
-      
-      delete user.password
+
+      delete user.password;
       return {
         user,
         access_token: await this.getJwtToken({ id: user.id }),
@@ -37,11 +37,16 @@ export class AuthService {
 
   async signIn(signInDto: SignInDto): Promise<any> {
     const { email, password } = signInDto;
+    let user: User;
 
-    const user = await this.userRepository.findOne({
-      where: { email },
-      select: ['id', 'fullName', 'email', 'password'],
-    });
+    try {
+      user = await this.userRepository.findOne({
+        where: { email },
+        select: ['id', 'fullName', 'email', 'password'],
+      });
+    } catch (err) {
+      this.handlerException.handlerDBException(err);
+    }
 
     if (!user)
       throw new UnauthorizedException('Credentials are not valid (email)');
