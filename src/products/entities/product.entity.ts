@@ -3,13 +3,15 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { ProductImage } from './product-image.entity';
+import { User } from '../../auth/entities/user.entity';
 
-@Entity({name: 'products'})
+@Entity({ name: 'products' })
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -39,10 +41,13 @@ export class Product {
   tags: string[];
 
   @OneToMany(() => ProductImage, (productImage) => productImage.product, {
-    cascade:true,
+    cascade: true,
     eager: true,
   })
-  images?: ProductImage[];
+  images: ProductImage[];
+
+  @ManyToOne(() => User, (user) => user.products, { eager: true })
+  user: User;
 
   @BeforeInsert()
   @BeforeUpdate()

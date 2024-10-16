@@ -25,9 +25,7 @@ export class AuthService {
       });
       await this.userRepository.save(user);
       
-      delete user.password;
-      delete  user.isActive;
-      delete  user.roles;
+      delete user.password
       return {
         user,
         access_token: await this.getJwtToken({ id: user.id }),
@@ -59,7 +57,6 @@ export class AuthService {
   }
 
   private async getJwtToken(payload: IjwtPayload) {
-    const token = await this.jwtService.signAsync(payload);
-    return token;
+    return await this.jwtService.signAsync(payload);
   }
 }

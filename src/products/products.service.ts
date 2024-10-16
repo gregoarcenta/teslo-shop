@@ -2,12 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, ILike, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from './entities/product.entity';
+import { Product } from "./entities";
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { isUUID } from 'class-validator';
 import { ProductImage } from './entities';
 import { HandlerException } from '../common/exceptions/handler.exception';
+import { User } from '../auth/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -25,10 +26,10 @@ export class ProductsService {
     this.limit = this.configService.get('DEFAULT_LIMIT');
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
     const productDto = this.buildDtoCreateAndUpdate(createProductDto);
     try {
-      const product = this.productRepository.create(productDto);
+      const product = this.productRepository.create({ ...productDto, user });
       return await this.productRepository.save(product);
     } catch (err) {
       this.handlerException.handlerDBException(err);
@@ -62,6 +63,7 @@ export class ProductsService {
       product = await this.productRepository.findOne({
         where: [{ id }, { title: ILike(term) }, { slug: term }],
       });
+
       /*const queryBuilder = this.productsRepository.createQueryBuilder('prod');
         product = await queryBuilder
           .where('LOWER(title) = :title or slug = :slug', {
@@ -89,7 +91,7 @@ export class ProductsService {
     };
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
     // Busca el producto original
     const originalProduct = await this.findOne(id);
 
@@ -101,7 +103,10 @@ export class ProductsService {
     productDto.id = id;
 
     // Carga la instancia del producto a actualizar
-    const product = await this.productRepository.preload(productDto);
+    const product = await this.productRepository.preload({
+      ...productDto,
+      user,
+    });
 
     // Crea un QueryRunner para iniciar una transaccion
     const queryRunner = this.dataSource.createQueryRunner();
