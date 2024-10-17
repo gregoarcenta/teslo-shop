@@ -40,10 +40,12 @@ export class AuthService {
     let user: User;
 
     try {
-      user = await this.userRepository.findOne({
-        where: { email },
-        select: ['id', 'fullName', 'email', 'password'],
-      });
+      user = await this.userRepository
+        .createQueryBuilder('user')
+        .addSelect('user.password')
+        .where('user.email = :email', { email })
+        .getOne();
+      console.log(user);
     } catch (err) {
       this.handlerException.handlerDBException(err);
     }

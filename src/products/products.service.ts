@@ -2,13 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, ILike, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from "./entities";
+import { isUUID } from 'class-validator';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
-import { isUUID } from 'class-validator';
-import { ProductImage } from './entities';
-import { HandlerException } from '../common/exceptions/handler.exception';
+import { Product, ProductImage } from "./entities";
 import { User } from '../auth/entities/user.entity';
+import { HandlerException } from '../common/exceptions/handler.exception';
 
 @Injectable()
 export class ProductsService {
@@ -30,7 +29,8 @@ export class ProductsService {
     const productDto = this.buildDtoCreateAndUpdate(createProductDto);
     try {
       const product = this.productRepository.create({ ...productDto, user });
-      return await this.productRepository.save(product);
+      const { id } = await this.productRepository.save(product);
+      return await this.findOnePlain(id)
     } catch (err) {
       this.handlerException.handlerDBException(err);
     }
@@ -144,7 +144,7 @@ export class ProductsService {
   async removeAll() {
     const query = this.productRepository.createQueryBuilder();
     try {
-      return await query.delete().where({}).execute();
+      return await query.delete().execute();
     } catch (err) {
       this.handlerException.handlerDBException(err);
     }

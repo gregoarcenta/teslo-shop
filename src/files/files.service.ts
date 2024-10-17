@@ -22,7 +22,8 @@ export class FilesService {
     }
   }
 
-  async getFile(publicId: string) {
+  async getFile(imageName: string) {
+    const publicId = imageName.split('.')[0];
     try {
       return await this.cloudinaryService.getImageUrl(publicId);
     } catch (error) {
@@ -33,7 +34,7 @@ export class FilesService {
   async deleteFile(id: string) {
     try {
       await this.cloudinaryService.deleteImage(id);
-      return `The image with the id: ${id} was removed from cloudinary`;
+      return `The image with the id: ${id} was removed`;
     } catch (e) {
       if (!!e.response) return e.response;
 

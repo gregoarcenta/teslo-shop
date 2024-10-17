@@ -3,6 +3,7 @@ import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
 import { CloudinaryProvider } from './cloudinary/cloudinary.provider';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [FilesController],
@@ -11,5 +12,6 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
     CloudinaryService,
     CloudinaryProvider.cloudinaryConfig(),
   ],
+  imports: [AuthModule],
 })
 export class FilesModule {}
