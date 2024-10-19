@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly handlerException: HandlerException,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -45,7 +45,6 @@ export class AuthService {
         .addSelect('user.password')
         .where('user.email = :email', { email })
         .getOne();
-      console.log(user);
     } catch (err) {
       this.handlerException.handlerDBException(err);
     }
