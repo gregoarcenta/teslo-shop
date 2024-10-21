@@ -17,7 +17,7 @@ export class FilesService {
       const response = await this.cloudinaryService.uploadImage(file);
       return response;
     } catch (e) {
-      console.log(e.message);
+      this.logger.error(e.message);
       throw new BadRequestException('Cannot upload file');
     }
   }
