@@ -6,12 +6,16 @@ import { envValidationSchema } from './config/env.validation';
 import { SeedModule } from './seed/seed.module';
 import { FilesModule } from './files/files.module';
 import { AuthModule } from './auth/auth.module';
-import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ validationSchema: envValidationSchema }),
     TypeOrmModule.forRoot({
+      ssl: process.env.NODE_ENV === 'production',
+      extra:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : null,
       type: 'postgres',
       host: process.env.DB_HOST,
       port: 5432,
