@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     ConfigModule.forRoot({ validationSchema: envValidationSchema }),
     TypeOrmModule.forRoot({
-      ssl: process.env.NODE_ENV === 'production',
+      ssl: false,
       extra:
         process.env.NODE_ENV === 'production'
           ? { rejectUnauthorized: false }
