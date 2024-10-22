@@ -38,15 +38,6 @@ importers:
       '@nestjs/typeorm':
         specifier: ^10.0.2
         version: 10.0.2(@nestjs/common@10.4.5(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typeorm@0.3.20(pg@8.13.0)(ts-node@10.9.2(@types/node@20.16.13)(typescript@5.6.3)))
-      '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.21
-      '@types/multer':
-        specifier: ^1.4.12
-        version: 1.4.12
-      '@types/node':
-        specifier: ^20.3.1
-        version: 20.16.13
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
@@ -93,9 +84,18 @@ importers:
       '@types/bcrypt':
         specifier: ^5.0.2
         version: 5.0.2
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.21
       '@types/jest':
         specifier: ^29.5.2
         version: 29.5.13
+      '@types/multer':
+        specifier: ^1.4.12
+        version: 1.4.12
+      '@types/node':
+        specifier: ^20.3.1
+        version: 20.16.13
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
