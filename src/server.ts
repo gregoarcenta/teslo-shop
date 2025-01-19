@@ -4,6 +4,7 @@ import express from 'express';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bootstrap from './main.server';
+import { JWT_TOKEN_NAME, SERVER_JWT_TOKEN } from '@/core/services/auth.service';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -31,7 +32,7 @@ app.get(
   '**',
   express.static(browserDistFolder, {
     maxAge: '1y',
-    index: 'index.html'
+    index: 'index.html',
   }),
 );
 
@@ -41,13 +42,25 @@ app.get(
 app.get('**', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;
 
+  const cookies = headers.cookie ?? ''; // lang=it;another=cookie
+  const jwtCookie = cookies
+    .split(';')
+    .find((cookie) => cookie.includes(JWT_TOKEN_NAME));
+
+  const jwt = jwtCookie ? jwtCookie.split('=')[1] : null;
+
   commonEngine
     .render({
       bootstrap,
       documentFilePath: indexHtml,
       url: `${protocol}://${headers.host}${originalUrl}`,
       publicPath: browserDistFolder,
-      providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+      providers: [
+        { provide: APP_BASE_HREF, useValue: baseUrl },
+        { provide: 'REQUEST', useValue: req },
+        { provide: 'RESPONSE', useValue: res },
+        { provide: SERVER_JWT_TOKEN, useValue: jwt },
+      ],
     })
     .then((html) => res.send(html))
     .catch((err) => next(err));
