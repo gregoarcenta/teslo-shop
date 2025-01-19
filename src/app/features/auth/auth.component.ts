@@ -15,6 +15,7 @@ import { emailFormatValidator } from '@/shared/validators/email-format.validator
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns } from 'flowbite';
 import { Router } from '@angular/router';
+import { ToastService } from '@/core/services/toast.service';
 
 interface ILoginForm {
   email: FormControl<string>;
@@ -35,13 +36,15 @@ type loginFormProps = keyof ILoginForm;
   `,
 })
 export default class AuthComponent {
-  // Services
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
   private readonly flowbiteService = inject(FlowbiteService);
   private readonly nnFormBuilder = inject(NonNullableFormBuilder);
 
   public isLoading = signal<boolean>(false);
+  public hasEmailError = signal<boolean>(false);
+  public hasPasswordError = signal<boolean>(false);
 
   public loginForm = this.nnFormBuilder.group<ILoginForm>({
     email: this.nnFormBuilder.control('', [
@@ -53,6 +56,15 @@ export default class AuthComponent {
       Validators.minLength(6),
     ]),
   });
+
+  constructor() {
+    this.loginForm.valueChanges.subscribe(() => {
+      if (this.hasEmailError() || this.hasPasswordError()) {
+        this.hasEmailError.set(false);
+        this.hasPasswordError.set(false);
+      }
+    });
+  }
 
   get getEmailError(): string {
     const control = this.loginForm.controls['email'];
@@ -98,14 +110,31 @@ export default class AuthComponent {
         this.router.navigateByUrl('/').then((success) => {
           if (success) {
             this.flowbiteService.loadFlowbite(() => initDropdowns());
-            // TODO: MOSTRAR TOAST CON EL MENSAJE (res)
+            this.toastService.showToast(res, 'success');
           }
         });
       },
-      error: (err) => {
+      error: ({ error }) => {
         this.isLoading.set(false);
-        // TODO: ALERT CREDENTIAL NOT VALID
-        console.error(err);
+        this.toastService.showToast(error.message, 'error', false);
+
+        if (error.message.includes('email')) {
+          this.loginForm.controls['email'].markAsTouched();
+          this.hasEmailError.set(true);
+          const emailInput = document.querySelector(
+            '[formControlName="email"]',
+          ) as HTMLElement;
+          emailInput?.focus();
+        }
+
+        if (error.message.includes('password')) {
+          this.loginForm.controls['password'].markAsTouched();
+          this.hasPasswordError.set(true);
+          const passwordInput = document.querySelector(
+            '[formControlName="password"]',
+          ) as HTMLElement;
+          passwordInput?.focus();
+        }
       },
     });
   }

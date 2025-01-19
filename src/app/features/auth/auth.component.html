@@ -28,7 +28,13 @@
             name="email"
             formControlName="email"
             placeholder="name@company.com"
-            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            autocomplete="off"
+            class="rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            [class]="
+              hasEmailError()
+                ? 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700'
+                : 'bg-gray-50 border border-gray-300 text-gray-900'
+            "
           />
           @if (isInvalid("email")) {
             <span class="text-red-500 text-sm">{{ getEmailError }}</span>
@@ -49,6 +55,11 @@
             formControlName="password"
             placeholder="••••••••"
             class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            [class]="
+              hasPasswordError()
+                ? 'bg-red-50 border border-red-500 text-red-900 placeholder-red-700'
+                : 'bg-gray-50 border border-gray-300 text-gray-900'
+            "
           />
           @if (isInvalid("password")) {
             <span class="text-red-500 text-sm">{{ getPasswordError }}</span>
