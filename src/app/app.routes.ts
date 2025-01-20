@@ -8,11 +8,17 @@ export const routes: Routes = [
     canActivate: [noAuthGuard],
   },
   {
-    path: 'home',
+    path: 'register',
+    loadComponent: () => import('./features/register/register.component'),
+    canActivate: [noAuthGuard],
+  },
+  {
+    path: '',
     loadComponent: () => import('./features/home/home.component'),
+    pathMatch: 'full',
   },
   {
     path: '**',
-    redirectTo: () => 'home',
+    redirectTo: () => '',
   },
 ];

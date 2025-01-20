@@ -14,7 +14,7 @@ import {
 import { emailFormatValidator } from '@/shared/validators/email-format.validator';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns } from 'flowbite';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@/core/services/toast.service';
 
 interface ILoginForm {
@@ -26,14 +26,9 @@ type loginFormProps = keyof ILoginForm;
 
 @Component({
   selector: 'app-auth',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './auth.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: `
-    .app-h-100 {
-      height: calc(100dvh - 80px);
-    }
-  `,
 })
 export default class AuthComponent {
   private readonly router = inject(Router);

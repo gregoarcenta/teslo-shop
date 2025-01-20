@@ -52,10 +52,8 @@ export class AuthService {
       })
       .pipe(
         shareReplay(1),
-        map(({ data }) => {
-          const { user, accessToken } = data;
-          this.cookie.set(JWT_TOKEN_NAME, accessToken);
-          this.user.set(user);
+        map(({ data: authUser }) => {
+          this.authenticateUser(authUser);
           return true;
         }),
         catchError(({ error }) => {
@@ -75,10 +73,8 @@ export class AuthService {
   login(loginParams: ILoginParams): Observable<string> {
     const apiUrl = `${this.baseUrl}/api/auth/signin`;
     return this.http.post<IApiResponse<IAuthUser>>(apiUrl, loginParams).pipe(
-      map(({ data, message }) => {
-        const { user, accessToken } = data;
-        this.cookie.set(JWT_TOKEN_NAME, accessToken);
-        this.user.set(user);
+      map(({ data: authUser, message }) => {
+        this.authenticateUser(authUser);
         return message;
       }),
     );
@@ -87,5 +83,10 @@ export class AuthService {
   logout() {
     this.user.set(null);
     this.cookie.delete(JWT_TOKEN_NAME);
+  }
+
+  authenticateUser({ user, accessToken }: IAuthUser): void {
+    this.user.set(user);
+    this.cookie.set(JWT_TOKEN_NAME, accessToken);
   }
 }
