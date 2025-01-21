@@ -8,7 +8,12 @@ import {
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
+import { jwtInterceptor } from '@/core/interceptors/jwt.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +23,7 @@ export const appConfig: ApplicationConfig = {
       withHttpTransferCacheOptions({ includeRequestsWithAuthHeaders: true }),
       withEventReplay(),
     ),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptors([jwtInterceptor])),
     provideAnimationsAsync(),
   ],
 };

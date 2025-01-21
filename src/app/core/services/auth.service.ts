@@ -36,20 +36,14 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   isAuthenticated(): Observable<boolean> {
-    const token =
-      this.serverJwt ??
-      (this.cookie.check(JWT_TOKEN_NAME)
-        ? this.cookie.get(JWT_TOKEN_NAME)
-        : null);
+    const token = this.getTokenJwt();
 
     if (!token) return of(false);
 
     if (this.user()) return of(true);
 
     return this.http
-      .get<IApiResponse<IAuthUser>>(`${this.baseUrl}/api/auth/check-status`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get<IApiResponse<IAuthUser>>(`${this.baseUrl}/api/auth/check-status`)
       .pipe(
         shareReplay(1),
         map(({ data: authUser }) => {
@@ -88,5 +82,14 @@ export class AuthService {
   authenticateUser({ user, accessToken }: IAuthUser): void {
     this.user.set(user);
     this.cookie.set(JWT_TOKEN_NAME, accessToken);
+  }
+
+  getTokenJwt(): string | null {
+    return (
+      this.serverJwt ??
+      (this.cookie.check(JWT_TOKEN_NAME)
+        ? this.cookie.get(JWT_TOKEN_NAME)
+        : null)
+    );
   }
 }
