@@ -1,0 +1,463 @@
+<nav class="bg-white antialiased">
+  <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0 py-4">
+    <!-- FIRST NAVBAR -->
+    <div class="flex items-center justify-between">
+      <!-- LOGO AND SEARCH-->
+      <div class="flex items-center space-x-8">
+        <!-- LOGO -->
+        <div class="shrink-0">
+          <a routerLink="/" title="Logo">
+            <img
+              class="block w-auto h-8"
+              src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/logo-full.svg"
+              alt=""
+            />
+          </a>
+        </div>
+
+        <!-- SEARCH -->
+        <form>
+          <div class="hidden lg:flex w-[35rem]">
+            <label
+              for="search-dropdown"
+              class="mb-2 text-sm font-medium text-gray-900 sr-only"
+              >Your Email</label
+            >
+            <button
+              id="dropdown-button"
+              data-dropdown-toggle="dropdown"
+              class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300"
+              type="button"
+            >
+              All categories
+              <svg
+                class="w-2.5 h-2.5 ms-2.5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 10 6"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m1 1 4 4 4-4"
+                />
+              </svg>
+            </button>
+            <div
+              id="dropdown"
+              class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44"
+            >
+              <ul
+                class="py-2 text-sm text-gray-700"
+                aria-labelledby="dropdown-button"
+              >
+                <li>
+                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"
+                    >Shopping</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"
+                    >Images</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="block px-4 py-2 hover:bg-gray-100">News</a>
+                </li>
+                <li>
+                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"
+                    >Finance</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div class="relative w-full">
+              <input
+                type="search"
+                id="search-dropdown"
+                class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg rounded-s-gray-100 rounded-s-2 border border-gray-300 focus:ring-rose-500 focus:border-rose-500"
+                placeholder="What can we help you find today?"
+              />
+              <button
+                type="submit"
+                class="absolute top-0 end-0 p-2.5 h-full text-sm font-medium text-white bg-rose-700 rounded-e-lg border border-rose-700 hover:bg-rose-800 focus:ring-4 focus:outline-none focus:ring-rose-300"
+              >
+                <svg
+                  class="w-4 h-4"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- SEARCH ICON BUTTON, CART, ACCOUNT, LOGIN, REGISTER-->
+      <div class="flex items-center lg:space-x-2">
+        <!-- BUTTON SEARCH MOBILE-->
+        <button
+          type="button"
+          class="inline-flex lg:hidden items-center rounded-lg justify-center p-2 hover:bg-gray-100 text-sm font-medium leading-none text-gray-900"
+          (click)="onToggleInputSearch()"
+        >
+          <span class="sr-only"> Search </span>
+          <svg
+            class="w-5 h-5 text-gray-800"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-width="2"
+              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+            />
+          </svg>
+        </button>
+
+        <!-- IS AUTH: CART AND ACCOUNT BUTTON; ELSE REGISTER AND LOGIN BUTTON-->
+        @if (isAuthenticated()) {
+          <!-- CART DROPDOWN BUTTON-->
+          <button
+            id="myCartDropdownButton1"
+            data-dropdown-toggle="myCartDropdown1"
+            type="button"
+            class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 text-sm font-medium leading-none text-gray-900"
+          >
+            <span class="sr-only"> Cart </span>
+            <svg
+              class="w-5 h-5 lg:me-1"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
+              />
+            </svg>
+            <span class="hidden sm:flex">My Cart</span>
+            <svg
+              class="hidden sm:flex w-4 h-4 text-gray-900 ms-1"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m19 9-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          <!-- CART DROPDOWN-->
+          <div
+            id="myCartDropdown1"
+            class="hidden z-10 mx-auto max-w-sm space-y-4 overflow-hidden rounded-lg bg-white p-4 antialiased shadow-lg"
+          >
+            <div class="grid grid-cols-2">
+              <div class="flex justify-center items-center">
+                <img
+                  src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/iphone-light.svg"
+                  class="h-10 w-10"
+                />
+                <div>
+                  <a
+                    href="#"
+                    class="truncate text-sm font-semibold leading-none text-gray-900 hover:underline"
+                    >Apple iPhone 15</a
+                  >
+                  <p class="mt-0.5 truncate text-sm font-normal text-gray-500">
+                    $599
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end gap-6">
+                <p class="text-sm font-normal leading-none text-gray-500">
+                  Qty: 1
+                </p>
+
+                <button
+                  data-tooltip-target="tooltipRemoveItem1a"
+                  type="button"
+                  class="text-red-600 hover:text-red-700"
+                >
+                  <span class="sr-only"> Remove </span>
+                  <svg
+                    class="w-4 h-4 text-red-500"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+                    />
+                  </svg>
+                </button>
+                <div
+                  id="tooltipRemoveItem1a"
+                  role="tooltip"
+                  class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300"
+                >
+                  Remove item
+                  <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              class="mb-2 me-2 inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+
+          <!-- BUTTON USER DROPDOWN-->
+          <button
+            #userDropdownButton
+            id="userDropdownButton"
+            data-dropdown-toggle="userDropdown"
+            class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 text-sm font-medium leading-none text-gray-900"
+          >
+            <svg
+              class="w-5 h-5 me-1"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-width="2"
+                d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              />
+            </svg>
+            Account
+            <svg
+              class="w-4 h-4 text-gray-900"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m19 9-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          <!-- USER DROPDOWN-->
+          <div
+            id="userDropdown"
+            class="hidden z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow"
+          >
+            <ul class="p-2 text-start text-sm font-medium text-gray-900">
+              <li>
+                <a
+                  href="#"
+                  title=""
+                  class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-800 dark:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-width="2"
+                      d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
+                  My Account
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  title=""
+                  class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-800 dark:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
+                    />
+                  </svg>
+                  Favourites
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  title=""
+                  class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100"
+                >
+                  <svg
+                    class="w4 h-4 text-gray-800"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 7h6l2 4m-8-4v8m0-8V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9h2m8 0H9m4 0h2m4 0h2v-4m0 0h-5m3.5 5.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm-10 0a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+                    />
+                  </svg>
+                  My Orders
+                </a>
+              </li>
+            </ul>
+
+            <div class="p-2 text-sm font-medium text-gray-900">
+              <button
+                class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                (click)="logout()"
+              >
+                <svg
+                  class="w-4 h-4 text-red-600"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"
+                  />
+                </svg>
+
+                Sign Out
+              </button>
+            </div>
+          </div>
+        } @else {
+          <!-- BUTTON LOGIN-->
+          <button
+            type="button"
+            class="text-white bg-gradient-to-br from-rose-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-rose-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mx-2"
+            (click)="login()"
+          >
+            Log in
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (showInputSearch()) {
+      <hr class="my-4 lg:hidden" />
+    }
+
+    <!-- SEARCH MOBILE-->
+    @if (showInputSearch()) {
+      <form class="lg:hidden">
+        <label
+          for="search"
+          class="mb-2 text-sm font-medium text-gray-900 sr-only"
+          >Search</label
+        >
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
+          >
+            <svg
+              class="w-4 h-4 text-gray-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+              />
+            </svg>
+          </div>
+          <input
+            type="search"
+            id="search"
+            class="block w-full p-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-rose-500 focus:border-rose-500"
+            placeholder="Search in all categories"
+          />
+          <button
+            type="submit"
+            class="text-white absolute end-1.5 bottom-1.5 bg-rose-700 hover:bg-rose-800 focus:ring-4 focus:outline-none focus:ring-rose-300 font-semibold rounded-lg text-sm px-3 py-[.450rem]"
+          >
+            Search
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</nav>
