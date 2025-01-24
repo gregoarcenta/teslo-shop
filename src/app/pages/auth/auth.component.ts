@@ -13,7 +13,7 @@ import {
 } from '@angular/forms';
 import { emailFormatValidator } from '@/shared/validators/email-format.validator';
 import { FlowbiteService } from '@/core/services/flowbite.service';
-import { initDropdowns } from 'flowbite';
+import { initDropdowns, initTooltips } from 'flowbite';
 import { Router, RouterLink } from '@angular/router';
 import { ToastService } from '@/core/services/toast.service';
 
@@ -104,7 +104,10 @@ export default class AuthComponent {
         this.isLoading.set(false);
         this.router.navigateByUrl('/').then((success) => {
           if (success) {
-            this.flowbiteService.loadFlowbite(() => initDropdowns());
+            this.flowbiteService.loadFlowbite(() => {
+              initDropdowns();
+              initTooltips();
+            });
             this.toastService.showToast(res, 'success');
           }
         });

@@ -15,8 +15,8 @@ import { emailFormatValidator } from '@/shared/validators/email-format.validator
 import { ToastService } from '@/core/services/toast.service';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { strongPasswordValidator } from '@/shared/validators/strong-password.validator';
-import { initDropdowns } from 'flowbite';
-import { RegisterService } from '@/features/register/services/register.service';
+import { initDropdowns, initTooltips } from 'flowbite';
+import { RegisterService } from '@/core/services/register.service';
 
 interface IRegisterForm {
   fullName: FormControl<string>;
@@ -123,7 +123,10 @@ export default class RegisterComponent {
         this.isLoading.set(false);
         this.router.navigateByUrl('/').then((success) => {
           if (success) {
-            this.flowbiteService.loadFlowbite(() => initDropdowns());
+            this.flowbiteService.loadFlowbite(() => {
+              initDropdowns();
+              initTooltips();
+            });
             this.toastService.showToast(res, 'success');
           }
         });

@@ -4,17 +4,20 @@ import { noAuthGuard } from '@/core/guards/no-auth.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/auth.component'),
+    title: 'Login - Teslo Shop',
+    loadComponent: () => import('./pages/auth/auth.component'),
     canActivate: [noAuthGuard],
   },
   {
     path: 'register',
-    loadComponent: () => import('./features/register/register.component'),
+    title: 'Register - Teslo Shop',
+    loadComponent: () => import('./pages/register/register.component'),
     canActivate: [noAuthGuard],
   },
   {
     path: '',
-    loadComponent: () => import('./features/home/home.component'),
+    title: 'Home - Teslo Shop',
+    loadComponent: () => import('./pages/home/home.component'),
     pathMatch: 'full',
   },
   {

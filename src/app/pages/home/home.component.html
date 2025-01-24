@@ -1,0 +1,391 @@
+<section class="bg-gray-50 min-app-h-100 py-4 antialiased md:py-12">
+  <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+    <!-- Heading & Filters -->
+    <div
+      class="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8"
+    >
+      <div class="flex items-center space-x-4 mt-3">
+        <h2 class="text-xl font-semibold text-gray-900 sm:text-2xl">
+          @let _currentType = filterState().type ?? "All types";
+          {{ _currentType }}
+        </h2>
+        <div class="self-end">
+          @if (filterState().term.length > 0) {
+            <span>Searching results for: </span>
+            <span
+              class="bg-blue-100 text-blue-800 text-sm me-2 px-2.5 py-0.5 rounded-sm font-bold"
+              >{{ filterState().term }}</span
+            >
+          }
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- CLEAN FILTERS BUTTON-->
+        @if (
+          filterState().term.length > 0 || filterState().type !== undefined
+        ) {
+          <button
+            type="button"
+            class="flex w-full items-center justify-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-red-100 sm:w-auto"
+            (click)="cleanFilterState()"
+          >
+            <svg
+              class="-ms-0.5 me-2 w-4 h-4 text-red-500"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"
+              />
+            </svg>
+            Clean filters
+          </button>
+        }
+
+        <!-- SORT BUTTON-->
+        <button
+          #sortProdDropdownBtn
+          id="sortDropdownButton1"
+          data-dropdown-toggle="dropdownSort1"
+          type="button"
+          class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 sm:w-auto"
+        >
+          <svg
+            class="-ms-0.5 me-2 h-4 w-4"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M7 4v16M7 4l3 3M7 4 4 7m9-3h6l-6 6h6m-6.5 10 3.5-7 3.5 7M14 18h4"
+            />
+          </svg>
+          Sort
+          <svg
+            class="-me-0.5 ms-2 h-4 w-4"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m19 9-7 7-7-7"
+            />
+          </svg>
+        </button>
+        <div
+          id="dropdownSort1"
+          class="z-50 hidden w-40 divide-y divide-gray-100 rounded-lg bg-white shadow"
+          data-popper-placement="bottom"
+        >
+          <ul
+            class="p-2 text-left text-sm font-medium text-gray-500"
+            aria-labelledby="sortDropdownButton"
+          >
+            @for (orderBy of orderByArray(); track $index) {
+              <li>
+                <button
+                  (click)="sortProducts(orderBy)"
+                  class="group inline-flex w-full items-center rounded-md px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                >
+                  {{ orderBy }}
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    @if (noProductsFound()) {
+      <p>
+        Sorry, we couldn't find any products matching your search. Please try
+        again with different keywords.
+      </p>
+    }
+
+    <!-- PRODUCT GRID-->
+    @if (isShowPlaceholder()) {
+      <app-product-skeleton />
+    } @else {
+      <div
+        class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        @for (product of products(); track product.id) {
+          <div
+            #productCard
+            class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+          >
+            <!-- PRODUCT IMAGE-->
+            <div class="h-56 w-full">
+              <a [routerLink]="['/', product.slug]">
+                <img
+                  class="mx-auto h-full"
+                  [ngSrc]="product.images[0]"
+                  [placeholder]="product.images[0]"
+                  [title]="product.title"
+                  [alt]="'image ' + product.title"
+                  disableOptimizedSrcset
+                  width="852"
+                  height="852"
+                />
+              </a>
+            </div>
+
+            <!-- PRODUCT CONTENT-->
+            <div class="pt-4">
+              <div class="mb-3 flex items-center justify-between gap-4">
+                <!-- PRODUCT TAGS-->
+                @for (tag of product.tags; track $index) {
+                  <span
+                    class="me-2 rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800"
+                  >
+                    {{ tag }}
+                  </span>
+                }
+
+                <!-- PRODUCT VIEW AND FAVORITES-->
+                <div class="flex items-center justify-end gap-1">
+                  <button
+                    type="button"
+                    data-tooltip-target="tooltip-quick-look"
+                    class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <span class="sr-only"> Quick look </span>
+                    <svg
+                      class="h-5 w-5"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-width="2"
+                        d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"
+                      />
+                      <path
+                        stroke="currentColor"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+                  </button>
+                  <div
+                    id="tooltip-quick-look"
+                    role="tooltip"
+                    class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300"
+                    data-popper-placement="top"
+                  >
+                    Quick look
+                    <div class="tooltip-arrow" data-popper-arrow=""></div>
+                  </div>
+
+                  <button
+                    type="button"
+                    data-tooltip-target="tooltip-add-to-favorites"
+                    class="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <span class="sr-only"> Add to Favorites </span>
+                    <svg
+                      class="h-5 w-5"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
+                      />
+                    </svg>
+                  </button>
+                  <div
+                    id="tooltip-add-to-favorites"
+                    role="tooltip"
+                    class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300"
+                    data-popper-placement="top"
+                  >
+                    Add to favorites
+                    <div class="tooltip-arrow" data-popper-arrow=""></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PRODUCT TITLE-->
+              <a
+                [routerLink]="['/', product.slug]"
+                class="text-lg font-semibold leading-tight text-gray-900 hover:underline"
+                >{{ product.title }}</a
+              >
+
+              <!--PRODUCT TAGS-->
+              <ul class="mt-2 flex items-center gap-4">
+                @switch (getRandomNumber()) {
+                  @case (1) {
+                    <li class="flex items-center gap-2">
+                      <svg
+                        class="h-4 w-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 7h6l2 4m-8-4v8m0-8V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9h2m8 0H9m4 0h2m4 0h2v-4m0 0h-5m3.5 5.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Zm-10 0a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+                        />
+                      </svg>
+                      <p
+                        class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                      >
+                        Shipping Today
+                      </p>
+                    </li>
+                  }
+                  @case (2) {
+                    <li class="flex items-center gap-2">
+                      <svg
+                        class="h-4 w-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="m7.171 12.906-2.153 6.411 2.672-.89 1.568 2.34 1.825-5.183m5.73-2.678 2.154 6.411-2.673-.89-1.568 2.34-1.825-5.183M9.165 4.3c.58.068 1.153-.17 1.515-.628a1.681 1.681 0 0 1 2.64 0 1.68 1.68 0 0 0 1.515.628 1.681 1.681 0 0 1 1.866 1.866c-.068.58.17 1.154.628 1.516a1.681 1.681 0 0 1 0 2.639 1.682 1.682 0 0 0-.628 1.515 1.681 1.681 0 0 1-1.866 1.866 1.681 1.681 0 0 0-1.516.628 1.681 1.681 0 0 1-2.639 0 1.681 1.681 0 0 0-1.515-.628 1.681 1.681 0 0 1-1.867-1.866 1.681 1.681 0 0 0-.627-1.515 1.681 1.681 0 0 1 0-2.64c.458-.361.696-.935.627-1.515A1.681 1.681 0 0 1 9.165 4.3ZM14 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                        />
+                      </svg>
+                      <p
+                        class="text-sm font-medium text-gray-500 dark:text-gray-400"
+                      >
+                        Best Seller
+                      </p>
+                    </li>
+                  }
+                }
+                <li class="flex items-center gap-2">
+                  <svg
+                    class="h-4 w-4 text-gray-500"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-width="2"
+                      d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                    />
+                  </svg>
+                  <p class="text-sm font-medium text-gray-500">Best Price</p>
+                </li>
+              </ul>
+
+              <!-- PRICE AND ADD TO CART BUTTON-->
+              <div class="mt-4 flex items-center justify-between gap-4">
+                <!-- PRODUCT PRICE -->
+                <p class="text-2xl font-extrabold leading-tight text-gray-900">
+                  {{ product.price | currency }}
+                </p>
+
+                <!-- ADD TO CART BUTTON -->
+                <button
+                  type="button"
+                  class="inline-flex items-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
+                >
+                  <svg
+                    class="-ms-2 me-2 h-5 w-5"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
+                    />
+                  </svg>
+                  Add to cart
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <div class="w-full text-center">
+      @if (products().length < totalItems()) {
+        <button
+          type="button"
+          class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100"
+          [disabled]="isLoading()"
+          (click)="loadPage(page() + 1)"
+        >
+          @if (isLoading()) {
+            <svg
+              aria-hidden="true"
+              role="status"
+              class="inline w-4 h-4 me-3 text-red animate-spin"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="#E5E7EB"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentColor"
+              />
+            </svg>
+          }
+          Show more
+        </button>
+      }
+    </div>
+  </div>
+</section>

@@ -16,7 +16,10 @@
         </div>
 
         <!-- SEARCH -->
-        <form>
+        <form
+          [formGroup]="termGroup"
+          (ngSubmit)="onSearchProductByTerm(inputSearch.value)"
+        >
           <div class="hidden lg:flex w-[35rem]">
             <label
               for="search-dropdown"
@@ -24,12 +27,14 @@
               >Your Email</label
             >
             <button
+              #prodTypeDropdownBtn
               id="dropdown-button"
               data-dropdown-toggle="dropdown"
               class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300"
               type="button"
             >
-              All categories
+              @let _currentType = filterState().type ?? "All types";
+              {{ _currentType }}
               <svg
                 class="w-2.5 h-2.5 ms-2.5"
                 aria-hidden="true"
@@ -54,28 +59,22 @@
                 class="py-2 text-sm text-gray-700"
                 aria-labelledby="dropdown-button"
               >
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"
-                    >Shopping</a
-                  >
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"
-                    >Images</a
-                  >
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100">News</a>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"
-                    >Finance</a
-                  >
-                </li>
+                @for (type of productTypes(); track $index) {
+                  <li>
+                    <button
+                      type="button"
+                      class="block px-4 py-2 hover:bg-gray-100 cursor-pointer w-full"
+                      (click)="onChangeProductType(type)"
+                    >
+                      {{ type }}
+                    </button>
+                  </li>
+                }
               </ul>
             </div>
             <div class="relative w-full">
               <input
+                #inputSearch
                 type="search"
                 id="search-dropdown"
                 class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg rounded-s-gray-100 rounded-s-2 border border-gray-300 focus:ring-rose-500 focus:border-rose-500"
@@ -418,7 +417,11 @@
 
     <!-- SEARCH MOBILE-->
     @if (showInputSearch()) {
-      <form class="lg:hidden">
+      <form
+        class="lg:hidden"
+        [formGroup]="termGroup"
+        (ngSubmit)="onSearchProductByTerm(inputSearchMb.value)"
+      >
         <label
           for="search"
           class="mb-2 text-sm font-medium text-gray-900 sr-only"
@@ -445,6 +448,7 @@
             </svg>
           </div>
           <input
+            #inputSearchMb
             type="search"
             id="search"
             class="block w-full p-3 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-rose-500 focus:border-rose-500"

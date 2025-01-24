@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment.development';
+import { environment } from '../../../environments/environment.development';
 import { map, Observable } from 'rxjs';
 import { IApiResponse, IAuthUser } from '@/core/models';
 import { AuthService } from '@/core/services/auth.service';
