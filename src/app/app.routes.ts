@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { noAuthGuard } from '@/core/guards/no-auth.guard';
+import { authGuard } from '@/core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -13,6 +14,12 @@ export const routes: Routes = [
     title: 'Register - Teslo Shop',
     loadComponent: () => import('./pages/register/register.component'),
     canActivate: [noAuthGuard],
+  },
+  {
+    path: 'cart',
+    title: 'Cart - Teslo Shop',
+    loadComponent: () => import('./pages/cart/cart.component'),
+    canActivate: [authGuard],
   },
   {
     path: '',

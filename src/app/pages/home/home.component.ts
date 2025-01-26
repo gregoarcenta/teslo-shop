@@ -15,7 +15,7 @@ import {
   orderBy,
   ProductsService,
 } from '@/core/services/products.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   CurrencyPipe,
   IMAGE_LOADER,
@@ -26,6 +26,9 @@ import { Meta } from '@angular/platform-browser';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns, initTooltips } from 'flowbite';
 import { ProductSkeletonComponent } from '@/shared/components/product-skeleton/product-skeleton.component';
+import { CartService } from '@/core/services/cart.service';
+import { ToastService } from '@/core/services/toast.service';
+import { AuthService } from '@/core/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -47,18 +50,24 @@ import { ProductSkeletonComponent } from '@/shared/components/product-skeleton/p
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent implements OnInit, AfterViewInit {
+  // VIEW REFERENCES
   private readonly sortProdDropdownBtn = viewChild('sortProdDropdownBtn', {
     read: ElementRef,
   });
-
-  private readonly productsService = inject(ProductsService);
-  private readonly flowbiteService = inject(FlowbiteService);
-  private readonly meta = inject(Meta);
-
   private readonly productCardElements = viewChildren('productCard', {
     read: ElementRef,
   });
 
+  // SERVICES
+  private readonly productsService = inject(ProductsService);
+  private readonly flowbiteService = inject(FlowbiteService);
+  private readonly toastService = inject(ToastService);
+  private readonly cartService = inject(CartService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly meta = inject(Meta);
+
+  // SIGNALS
   public orderByArray = signal<orderBy[]>([
     'newest',
     'increasingPrice',
@@ -66,7 +75,13 @@ export default class HomeComponent implements OnInit, AfterViewInit {
   ]);
 
   isLoading = signal<boolean>(false);
-
+  addProductLoading = signal<{ productId: string; loading: boolean }>({
+    productId: '',
+    loading: false,
+  });
+  public isAuthenticated = computed(() => {
+    return !!this.authService.user();
+  });
   isShowPlaceholder = computed(() => this.productsService.isShowPlaceholder());
   noProductsFound = computed(() => this.productsService.noProductsFound());
   filterState = computed(() => this.productsService.filterState());
@@ -121,9 +136,6 @@ export default class HomeComponent implements OnInit, AfterViewInit {
         ]);
         this.scrollTLastElement();
       },
-      error: (error) => {
-        console.log('ERROR AL OBTENER LOS PRODUCTOS', error);
-      },
     });
   }
 
@@ -139,9 +151,6 @@ export default class HomeComponent implements OnInit, AfterViewInit {
       next: (products) => {
         this.productsService.products.set(products);
         this.scrollTLastElement();
-      },
-      error: (error) => {
-        console.log('ERROR AL OBTENER LOS PRODUCTOS', error);
       },
     });
   }
@@ -161,6 +170,13 @@ export default class HomeComponent implements OnInit, AfterViewInit {
     return Math.floor(Math.random() * 2) + 1;
   }
 
+  isLoadingProduct(productId: string) {
+    return (
+      this.addProductLoading().loading &&
+      this.addProductLoading().productId === productId
+    );
+  }
+
   closeDropdown(dropdownBtn: ElementRef) {
     dropdownBtn.nativeElement.focus();
     dropdownBtn.nativeElement.click();
@@ -177,5 +193,32 @@ export default class HomeComponent implements OnInit, AfterViewInit {
         });
       }
     }, 100);
+  }
+
+  addToCart(productId: string) {
+    if (!this.isAuthenticated()) {
+      this.toastService.showToast(
+        `You need to log in to add products to the cart.`,
+        'error',
+      );
+      this.router.navigate(['/login']).then(() => {});
+      return;
+    }
+
+    this.addProductLoading.set({ productId, loading: true });
+    this.cartService.addToCart(productId).subscribe({
+      next: (cartItem) => {
+        this.toastService.showToast(
+          `${cartItem.product.title} added to cart`,
+          'success',
+        );
+
+        this.cartService.getCart$.next();
+        this.addProductLoading.set({ productId: '', loading: false });
+      },
+      error: ({ error }) => {
+        this.toastService.showToast(error.message, 'error');
+      },
+    });
   }
 }

@@ -12,6 +12,7 @@ import { IApiResponse, IAuthUser, IUser } from '@/core/models';
 import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { ToastService } from '@/core/services/toast.service';
 import { isPlatformBrowser } from '@angular/common';
+import { CartService } from '@/core/services/cart.service';
 
 export const SERVER_JWT_TOKEN = new InjectionToken<string>('SERVER_JWT_TOKEN');
 export const JWT_TOKEN_NAME = 'teslo_auth_token';
@@ -32,6 +33,7 @@ export class AuthService {
   private readonly serverJwt = inject(SERVER_JWT_TOKEN, { optional: true });
   private readonly cookie = inject(SsrCookieService);
   private readonly toastService = inject(ToastService);
+  private readonly cartService = inject(CartService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
 
@@ -48,6 +50,7 @@ export class AuthService {
         shareReplay(1),
         map(({ data: authUser }) => {
           this.authenticateUser(authUser);
+          this.cartService.getCart$.next();
           return true;
         }),
         catchError(({ error }) => {
@@ -69,6 +72,7 @@ export class AuthService {
     return this.http.post<IApiResponse<IAuthUser>>(apiUrl, loginParams).pipe(
       map(({ data: authUser, message }) => {
         this.authenticateUser(authUser);
+        this.cartService.getCart$.next();
         return message;
       }),
     );
