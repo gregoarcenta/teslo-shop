@@ -12,7 +12,7 @@ import { AuthService } from '@/core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns, initTooltips } from 'flowbite';
-import { ProductType } from '@/core/models/product';
+import { IProduct, ProductType } from '@/core/models/product';
 import { ProductsService } from '@/core/services/products.service';
 import {
   FormControl,
@@ -20,14 +20,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CartService } from '@/core/services/cart.service';
 import {
   CurrencyPipe,
   IMAGE_LOADER,
   ImageLoaderConfig,
   NgOptimizedImage,
 } from '@angular/common';
-import { ToastService } from '@/core/services/toast.service';
+import { CartService } from '@/core/services/cart.service';
 
 @Component({
   selector: 'app-navbar',
@@ -40,7 +39,6 @@ import { ToastService } from '@/core/services/toast.service';
       },
     },
   ],
-
   templateUrl: './navbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -59,7 +57,6 @@ export class NavbarComponent implements AfterViewInit {
   // SERVICES
   private readonly flowbiteService = inject(FlowbiteService);
   private readonly productsService = inject(ProductsService);
-  private readonly toastService = inject(ToastService);
   private readonly authService = inject(AuthService);
   private readonly cartService = inject(CartService);
   private readonly router = inject(Router);
@@ -128,23 +125,13 @@ export class NavbarComponent implements AfterViewInit {
     return this.router.navigate(['login']);
   }
 
-  removeProductFromCart(productId: string) {
-    this.cartService.cart.update((cart) => ({
-      ...cart!,
-      cartItems: cart!.cartItems.filter(
-        (item) => item.product.id !== productId,
-      ),
-    }));
+  removeProductFromCart(product: IProduct) {
+    this.cartService.removeProduct$.next(product);
+  }
 
-    this.cartService.removeProductFromCart(productId).subscribe({
-      next: (successMessage) => {
-        this.toastService.showToast(successMessage, 'success');
-        this.cartService.getCart$.next();
-      },
-      error: ({ error }) => {
-        this.toastService.showToast(error.message, 'error');
-      },
-    });
+  goProductRoute(slug: string) {
+    this.closeDropdown(this.cartDropdownBtn()!);
+    this.router.navigate(['/', slug]).then(() => {});
   }
 
   goCartRoute() {

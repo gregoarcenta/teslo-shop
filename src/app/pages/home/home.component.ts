@@ -26,9 +26,10 @@ import { Meta } from '@angular/platform-browser';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns, initTooltips } from 'flowbite';
 import { ProductSkeletonComponent } from '@/shared/components/product-skeleton/product-skeleton.component';
-import { CartService } from '@/core/services/cart.service';
 import { ToastService } from '@/core/services/toast.service';
 import { AuthService } from '@/core/services/auth.service';
+import { CartService } from '@/core/services/cart.service';
+import { IProduct } from '@/core/models';
 
 @Component({
   selector: 'app-home',
@@ -75,10 +76,6 @@ export default class HomeComponent implements OnInit, AfterViewInit {
   ]);
 
   isLoading = signal<boolean>(false);
-  addProductLoading = signal<{ productId: string; loading: boolean }>({
-    productId: '',
-    loading: false,
-  });
   public isAuthenticated = computed(() => {
     return !!this.authService.user();
   });
@@ -166,17 +163,6 @@ export default class HomeComponent implements OnInit, AfterViewInit {
     this.loadPage(1);
   }
 
-  getRandomNumber() {
-    return Math.floor(Math.random() * 2) + 1;
-  }
-
-  isLoadingProduct(productId: string) {
-    return (
-      this.addProductLoading().loading &&
-      this.addProductLoading().productId === productId
-    );
-  }
-
   closeDropdown(dropdownBtn: ElementRef) {
     dropdownBtn.nativeElement.focus();
     dropdownBtn.nativeElement.click();
@@ -195,7 +181,7 @@ export default class HomeComponent implements OnInit, AfterViewInit {
     }, 100);
   }
 
-  addToCart(productId: string) {
+  addToCart(product: IProduct) {
     if (!this.isAuthenticated()) {
       this.toastService.showToast(
         `You need to log in to add products to the cart.`,
@@ -205,20 +191,6 @@ export default class HomeComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.addProductLoading.set({ productId, loading: true });
-    this.cartService.addToCart(productId).subscribe({
-      next: (cartItem) => {
-        this.toastService.showToast(
-          `${cartItem.product.title} added to cart`,
-          'success',
-        );
-
-        this.cartService.getCart$.next();
-        this.addProductLoading.set({ productId: '', loading: false });
-      },
-      error: ({ error }) => {
-        this.toastService.showToast(error.message, 'error');
-      },
-    });
+    this.cartService.addProduct$.next(product);
   }
 }

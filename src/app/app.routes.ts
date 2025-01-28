@@ -22,6 +22,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: ':slug',
+    loadComponent: () => import('./pages/product/product.component'),
+  },
+  {
     path: '',
     title: 'Home - Teslo Shop',
     loadComponent: () => import('./pages/home/home.component'),
