@@ -22,6 +22,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: '404',
+    title: 'Page not found - Teslo Shop',
+    loadComponent: () => import('./pages/not-found/not-found.component'),
+  },
+  {
     path: ':slug',
     loadComponent: () => import('./pages/product/product.component'),
   },
@@ -33,6 +38,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: () => '',
+    redirectTo: () => '404',
   },
 ];

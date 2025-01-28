@@ -51,10 +51,17 @@ export default class CartComponent implements OnInit {
 
     if (quantity === -1 && item.quantity === 1) return;
 
+    this.cartService.isLoading.set(true);
+
     this.cartService.updateProduct$.next({ product, quantity });
   }
 
   removeProductFromCart(product: IProduct) {
+    this.cartService.isLoading.set(true);
     this.cartService.removeProduct$.next(product);
+  }
+
+  proceedCheckout() {
+    console.log('quiere pagar');
   }
 }

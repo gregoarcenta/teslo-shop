@@ -69,6 +69,13 @@ export class ProductsService {
       );
   }
 
+  findOne(slug: string): Observable<IProduct> {
+    const apiUrl = `${this.baseUrl}/api/products/${slug}`;
+    return this.http
+      .get<IApiResponse<IProduct>>(apiUrl)
+      .pipe(map(({ data }) => data));
+  }
+
   cleanFilters() {
     this.filterState.set({
       page: 1,
