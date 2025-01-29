@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { noAuthGuard } from '@/core/guards/no-auth.guard';
 import { authGuard } from '@/core/guards/auth.guard';
+import { paymentSessionSuccessGuard } from '@/core/guards/payment-session-success.guard';
 
 export const routes: Routes = [
   {
@@ -20,6 +21,18 @@ export const routes: Routes = [
     title: 'Cart - Teslo Shop',
     loadComponent: () => import('./pages/cart/cart.component'),
     canActivate: [authGuard],
+  },
+  {
+    path: 'orders',
+    title: 'Orders - Teslo Shop',
+    loadComponent: () => import('./pages/orders/orders.component'),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'payment-success/:token',
+    title: 'Payment success - Teslo Shop',
+    loadComponent: () => import('./pages/pay-success/pay-success.component'),
+    canActivate: [paymentSessionSuccessGuard],
   },
   {
     path: '404',

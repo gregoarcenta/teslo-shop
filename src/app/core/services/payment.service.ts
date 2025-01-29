@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { IApiResponse } from '@/core/models';
 import { IOrder } from '@/core/models/order';
 import { CartService } from '@/core/services/cart.service';
@@ -25,7 +25,7 @@ export class PaymentService {
     );
   }
 
-  createOrder(): Observable<string> {
+  private createOrder(): Observable<string> {
     const apiUrl = `${this.baseUrl}/api/orders`;
     return this.http.post<IApiResponse<IOrder>>(apiUrl, {}).pipe(
       map(({ data: order }) => {
@@ -44,13 +44,21 @@ export class PaymentService {
     );
   }
 
-  createPaymentSession(orderId: string): Observable<string> {
+  private createPaymentSession(orderId: string): Observable<string> {
     const apiUrl = `${this.baseUrl}/api/payments/create-payment-session`;
     return this.http.post<IApiResponse<any>>(apiUrl, { orderId }).pipe(
       map(({ data }) => data.url),
       catchError(({ error }) => {
         return throwError(() => new Error(error.message));
       }),
+    );
+  }
+
+  validateSessionToken(token: string): Observable<boolean> {
+    const apiUrl = `${this.baseUrl}/api/payments/validate-token-session`;
+    return this.http.post<IApiResponse<boolean>>(apiUrl, { token }).pipe(
+      map(({ data: isValid }) => isValid),
+      catchError(() => of(false)),
     );
   }
 }
