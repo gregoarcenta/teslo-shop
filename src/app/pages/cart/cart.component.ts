@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   OnInit,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -15,6 +16,8 @@ import {
 } from '@angular/common';
 import { CartService } from '@/core/services/cart.service';
 import { IProduct } from '@/core/models';
+import { PaymentService } from '@/core/services/payment.service';
+import { ToastService } from '@/core/services/toast.service';
 
 @Component({
   selector: 'app-cart',
@@ -33,10 +36,13 @@ import { IProduct } from '@/core/models';
 export default class CartComponent implements OnInit {
   // SERVICES
   private readonly cartService = inject(CartService);
+  private readonly toastService = inject(ToastService);
+  private readonly paymentService = inject(PaymentService);
 
   // SIGNALS
+  public isLoadingPayment = signal<boolean>(false);
   public cart = computed(() => this.cartService.cart());
-  public isLoading = computed(() => this.cartService.isLoading());
+  public isLoadingPrice = computed(() => this.cartService.isLoading());
 
   ngOnInit(): void {
     this.cartService.getCart$.next();
@@ -62,6 +68,16 @@ export default class CartComponent implements OnInit {
   }
 
   proceedCheckout() {
-    console.log('quiere pagar');
+    this.isLoadingPayment.set(true);
+    this.paymentService.proceedCheckout().subscribe({
+      next: (paymentUrl) => {
+        this.isLoadingPayment.set(false);
+        window.location.href = paymentUrl;
+      },
+      error: (err) => {
+        this.toastService.showToast(err.message, 'error', false);
+        setTimeout(() => (window.location.href = '/'), 5000);
+      },
+    });
   }
 }
