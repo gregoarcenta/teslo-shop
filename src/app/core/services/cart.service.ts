@@ -1,5 +1,14 @@
 import { inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
-import { map, mergeMap, Observer, Subject, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  map,
+  mergeMap,
+  Observer,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { ICart } from '@/core/models/cart';
 import { ToastService } from '@/core/services/toast.service';
 import { ApiCartService } from '@/core/services/api-cart.service';
@@ -86,7 +95,13 @@ export class CartService {
       .pipe(
         map((product) => this.removeProduct(product)),
         mergeMap((e: Item) =>
-          this.apiCart.removeProduct(e.cartId, e.productId),
+          this.apiCart.removeProduct(e.cartId, e.productId).pipe(
+            catchError((error) => {
+              console.log('catch error:', error);
+              this.handleError(error);
+              return EMPTY;
+            }),
+          ),
         ),
       )
       .subscribe(this.cartObserver);
