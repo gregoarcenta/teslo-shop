@@ -7,7 +7,7 @@ export const paymentSessionSuccessGuard: CanActivateFn = (route, state) => {
   const paymentService = inject(PaymentService);
   const router = inject(Router);
 
-  const token = route.paramMap.get('token');
+  const token = route.queryParamMap.get('token');
   if (token) {
     return paymentService.validateSessionToken(token).pipe(
       map((isValidToken) => {
