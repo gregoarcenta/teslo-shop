@@ -1,8 +1,13 @@
+export interface IOrderPaginate {
+  orders: IOrder[];
+  totalOrders: number;
+}
+
 export interface IOrder {
   id: string;
   totalAmount: string;
   totalItems: number;
-  status: string;
+  status: OrderStatus;
   paid: boolean;
   paidAt: Date;
   createdAt: Date;
@@ -19,4 +24,10 @@ interface Item {
 interface Product {
   id: string;
   title: string;
+}
+
+export enum OrderStatus {
+  PENDING = 'pending',
+  DELIVERED = 'delivered',
+  CANCELLED = 'cancelled',
 }

@@ -139,6 +139,11 @@ export class NavbarComponent implements AfterViewInit {
     this.router.navigate(['cart']).then(() => {});
   }
 
+  goOrdersRoute() {
+    this.closeDropdown(this.userDropdownBtn()!);
+    this.router.navigate(['orders']).then(() => {});
+  }
+
   closeDropdown(dropdownBtn: ElementRef) {
     dropdownBtn.nativeElement.focus();
     dropdownBtn.nativeElement.click();
