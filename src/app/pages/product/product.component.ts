@@ -81,8 +81,14 @@ export default class ProductComponent {
       return;
     }
 
-    //todo: verificar el stock disponible y en el home uitar los que no tengan stock
-    this.cartService.addProduct$.next(this.product()!);
+    if (this.cartService.hasProductStock(this.product()!)) {
+      this.cartService.addProduct$.next(this.product()!);
+    } else {
+      this.toastService.showToast(
+        `Oops! This product is currently out of stock.`,
+        'warning',
+      );
+    }
   }
 
   changeImage(image: string) {

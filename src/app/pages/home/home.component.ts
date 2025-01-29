@@ -191,6 +191,13 @@ export default class HomeComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.cartService.addProduct$.next(product);
+    if (this.cartService.hasProductStock(product)) {
+      this.cartService.addProduct$.next(product);
+    } else {
+      this.toastService.showToast(
+        `Oops! This product is currently out of stock.`,
+        'warning',
+      );
+    }
   }
 }

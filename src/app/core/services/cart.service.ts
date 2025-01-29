@@ -176,6 +176,14 @@ export class CartService {
     this.toastService.showToast(`cart has been emptied`, 'success');
   }
 
+  hasProductStock(product: IProduct): boolean {
+    const cart = this.cart();
+    if (!cart) throw new Error('Cart is not initialized.');
+    const quantity =
+      cart.cartItems.find((it) => it.product.id === product.id)?.quantity ?? 0;
+    return quantity < product.stock;
+  }
+
   private handleError(error: any): void {
     console.error(error.message);
     this.isLoading.set(false);
