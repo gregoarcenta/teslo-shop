@@ -87,7 +87,10 @@ export default class ProductComponent {
       name: 'og:description',
       content: product.description,
     });
-    this.meta.updateTag({ name: 'og:image', content: product.images[0] });
+    this.meta.updateTag({
+      name: 'og:image',
+      content: `https://res.cloudinary.com/dy7luvgd5/image/upload/v1735063243/${product.images[0]}`,
+    });
     // this.meta.updateTag({
     //   name: 'og:url',
     //   content: `${this.baseUrl}/product/${product.id}`,
