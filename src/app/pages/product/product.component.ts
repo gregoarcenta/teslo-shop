@@ -21,10 +21,12 @@ import {
 import { AuthService } from '@/core/services/auth.service';
 import { ToastService } from '@/core/services/toast.service';
 import { CartService } from '@/core/services/cart.service';
+import { ProductSkeletonComponent } from '@/shared/components/product-skeleton/product-skeleton.component';
+import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product',
-  imports: [NgOptimizedImage, CurrencyPipe],
+  imports: [NgOptimizedImage, CurrencyPipe, ProductSkeletonComponent],
   providers: [
     {
       provide: IMAGE_LOADER,
@@ -45,6 +47,8 @@ export default class ProductComponent {
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly meta = inject(Meta);
+  private title = inject(Title);
 
   //SIGNALS
   public product = signal<IProduct | null>(null);
@@ -65,10 +69,30 @@ export default class ProductComponent {
           this.router.navigate(['404']).then(() => {});
         }
         if (product) {
+          this.addMetaTags(product);
           this.product.set(product);
           this.currentImage.set(product!.images[0]);
         }
       });
+  }
+
+  addMetaTags(product: IProduct) {
+    this.meta.updateTag({ name: 'description', content: product.description });
+    this.meta.updateTag({
+      name: 'keywords',
+      content: `ecommerce, ${product.title}, ${product.type}, buy online, shopping`,
+    });
+    this.meta.updateTag({ name: 'og:title', content: product.title });
+    this.meta.updateTag({
+      name: 'og:description',
+      content: product.description,
+    });
+    this.meta.updateTag({ name: 'og:image', content: product.images[0] });
+    // this.meta.updateTag({
+    //   name: 'og:url',
+    //   content: `${this.baseUrl}/product/${product.id}`,
+    // });
+    this.title.setTitle(`${product.title} | Teslo Shop`);
   }
 
   addToCart() {

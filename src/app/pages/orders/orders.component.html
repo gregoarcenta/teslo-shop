@@ -33,7 +33,7 @@
 
       <div class="mt-6 flow-root sm:mt-8">
         @if (isLoadingOrders()) {
-          <p>Loading...</p>
+          <app-orders-skeleton />
         } @else {
           <div class="divide-y divide-gray-200">
             @for (order of orders(); track order.id) {

@@ -50,7 +50,6 @@ export class AuthService {
         shareReplay(1),
         map(({ data: authUser }) => {
           this.authenticateUser(authUser);
-          this.cartService.getCart$.next();
           return true;
         }),
         catchError(({ error }) => {
@@ -72,7 +71,6 @@ export class AuthService {
     return this.http.post<IApiResponse<IAuthUser>>(apiUrl, loginParams).pipe(
       map(({ data: authUser, message }) => {
         this.authenticateUser(authUser);
-        this.cartService.getCart$.next();
         return message;
       }),
     );
@@ -86,6 +84,7 @@ export class AuthService {
   authenticateUser({ user, accessToken }: IAuthUser): void {
     this.user.set(user);
     this.cookie.set(JWT_TOKEN_NAME, accessToken);
+    this.cartService.getCart$.next();
   }
 
   getTokenJwt(): string | null {

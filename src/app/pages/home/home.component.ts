@@ -25,11 +25,11 @@ import {
 import { Meta } from '@angular/platform-browser';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns, initTooltips } from 'flowbite';
-import { ProductSkeletonComponent } from '@/shared/components/product-skeleton/product-skeleton.component';
 import { ToastService } from '@/core/services/toast.service';
 import { AuthService } from '@/core/services/auth.service';
 import { CartService } from '@/core/services/cart.service';
 import { IProduct } from '@/core/models';
+import { ProductsSkeletonComponent } from '@/shared/components/products-skeleton/products-skeleton.component';
 
 @Component({
   selector: 'app-home',
@@ -37,7 +37,7 @@ import { IProduct } from '@/core/models';
     RouterLink,
     NgOptimizedImage,
     CurrencyPipe,
-    ProductSkeletonComponent,
+    ProductsSkeletonComponent,
   ],
   templateUrl: './home.component.html',
   providers: [
@@ -106,7 +106,6 @@ export default class HomeComponent implements OnInit, AfterViewInit {
       content:
         'Explore a variety of products with amazing deals in our ecommerce home. Check out the latest and greatest now!',
     });
-    // this.meta.updateTag({ name: 'og:image', content: 'URL_of_your_image' });
 
     if (this.products().length === 0) this.loadPage(1);
   }

@@ -29,7 +29,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'payment-success/:token',
+    path: 'payment-success',
     title: 'Payment success - Teslo Shop',
     loadComponent: () => import('./pages/pay-success/pay-success.component'),
     canActivate: [paymentSessionSuccessGuard],

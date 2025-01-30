@@ -9,10 +9,11 @@ import {
 import { OrderService } from '@/core/services/order.service';
 import { IOrder, OrderStatus } from '@/core/models/order';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { OrdersSkeletonComponent } from '@/shared/components/orders-skeleton/orders-skeleton.component';
 
 @Component({
   selector: 'app-orders',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, OrdersSkeletonComponent],
   templateUrl: './orders.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
