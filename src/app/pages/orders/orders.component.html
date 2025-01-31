@@ -1,10 +1,8 @@
-<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+<section class="bg-white py-8 antialiased md:py-16">
   <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
     <div class="mx-auto max-w-5xl">
       <div class="gap-4 sm:flex sm:items-center sm:justify-between">
-        <h2
-          class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl"
-        >
+        <h2 class="text-xl font-semibold text-gray-900 sm:text-2xl">
           My orders
         </h2>
 
@@ -40,53 +38,33 @@
               <div class="flex flex-wrap items-center gap-y-4 py-6">
                 <!-- ORDER DATE -->
                 <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                  <dt
-                    class="text-base font-medium text-gray-500 dark:text-gray-400"
-                  >
-                    Date:
-                  </dt>
-                  <dd
-                    class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-                  >
+                  <dt class="text-base font-medium text-gray-500">Date:</dt>
+                  <dd class="mt-1.5 text-base font-semibold text-gray-900">
                     {{ order.createdAt | date }}
                   </dd>
                 </dl>
 
                 <!-- ORDER ITEMS TOTAL -->
                 <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                  <dt
-                    class="text-base font-medium text-gray-500 dark:text-gray-400"
-                  >
+                  <dt class="text-base font-medium text-gray-500">
                     Total items:
                   </dt>
-                  <dd
-                    class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-                  >
+                  <dd class="mt-1.5 text-base font-semibold text-gray-900">
                     {{ order.totalItems }}
                   </dd>
                 </dl>
 
                 <!-- ORDER PRICE -->
                 <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                  <dt
-                    class="text-base font-medium text-gray-500 dark:text-gray-400"
-                  >
-                    Price:
-                  </dt>
-                  <dd
-                    class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-                  >
+                  <dt class="text-base font-medium text-gray-500">Price:</dt>
+                  <dd class="mt-1.5 text-base font-semibold text-gray-900">
                     {{ order.totalAmount | currency }}
                   </dd>
                 </dl>
 
                 <!-- ORDER STATUS -->
                 <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-                  <dt
-                    class="text-base font-medium text-gray-500 dark:text-gray-400"
-                  >
-                    Status:
-                  </dt>
+                  <dt class="text-base font-medium text-gray-500">Status:</dt>
                   <dd
                     class="me-2 mt-1.5 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium"
                     [class]="
@@ -166,11 +144,14 @@
                 <div
                   class="w-full grid sm:grid-cols-2 lg:flex lg:w-64 lg:items-center lg:justify-end gap-4"
                 >
-                  <a
-                    href="#"
+                  <button
+                    data-modal-target="order-detail-modal"
+                    data-modal-toggle="order-detail-modal"
                     class="w-full inline-flex justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 lg:w-auto"
-                    >View details</a
+                    (click)="orderInModal.set(order)"
                   >
+                    View details
+                  </button>
                 </div>
               </div>
             } @empty {
@@ -205,3 +186,5 @@
     </div>
   </div>
 </section>
+
+<app-order-detail-modal [order]="orderInModal()" />

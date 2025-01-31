@@ -24,6 +24,8 @@ interface Item {
 interface Product {
   id: string;
   title: string;
+  slug: string;
+  images: any[];
 }
 
 export enum OrderStatus {
