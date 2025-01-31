@@ -27,10 +27,17 @@ import {
   NgOptimizedImage,
 } from '@angular/common';
 import { CartService } from '@/core/services/cart.service';
+import { UserModalComponent } from '@/shared/components/user-modal/user-modal.component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, ReactiveFormsModule, CurrencyPipe, NgOptimizedImage],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    CurrencyPipe,
+    NgOptimizedImage,
+    UserModalComponent,
+  ],
   providers: [
     {
       provide: IMAGE_LOADER,
@@ -67,9 +74,7 @@ export class NavbarComponent implements AfterViewInit {
   public filterState = computed(() => this.productsService.filterState());
   public cart = computed(() => this.cartService.cart());
 
-  public isAuthenticated = computed(() => {
-    return !!this.authService.user();
-  });
+  public isAuthenticated = computed(() => !!this.authService.user());
 
   // INPUT SEARCH FORM GROUP
   public termGroup = new FormGroup({

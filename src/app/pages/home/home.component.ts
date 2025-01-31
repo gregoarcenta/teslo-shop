@@ -76,9 +76,7 @@ export default class HomeComponent implements OnInit, AfterViewInit {
   ]);
 
   isLoading = signal<boolean>(false);
-  public isAuthenticated = computed(() => {
-    return !!this.authService.user();
-  });
+  isAuthenticated = computed(() => !!this.authService.user());
   isShowPlaceholder = computed(() => this.productsService.isShowPlaceholder());
   noProductsFound = computed(() => this.productsService.noProductsFound());
   filterState = computed(() => this.productsService.filterState());
