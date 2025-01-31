@@ -40,6 +40,7 @@ export default class AuthComponent {
   public isLoading = signal<boolean>(false);
   public hasEmailError = signal<boolean>(false);
   public hasPasswordError = signal<boolean>(false);
+  public showPassword = signal<boolean>(false);
 
   public loginForm = this.nnFormBuilder.group<ILoginForm>({
     email: this.nnFormBuilder.control('', [
@@ -135,5 +136,9 @@ export default class AuthComponent {
         }
       },
     });
+  }
+
+  togglePassword() {
+    this.showPassword.update((currentValue) => !currentValue);
   }
 }

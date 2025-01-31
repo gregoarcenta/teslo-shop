@@ -41,6 +41,7 @@ export default class RegisterComponent {
   private readonly nnFormBuilder = inject(NonNullableFormBuilder);
 
   public isLoading = signal<boolean>(false);
+  public showPassword = signal<boolean>(false);
 
   public registerForm = this.nnFormBuilder.group<IRegisterForm>({
     fullName: this.nnFormBuilder.control('', [
@@ -144,5 +145,9 @@ export default class RegisterComponent {
         this.toastService.showToast(error.message, 'error', false);
       },
     });
+  }
+
+  togglePassword() {
+    this.showPassword.update((currentValue) => !currentValue);
   }
 }
