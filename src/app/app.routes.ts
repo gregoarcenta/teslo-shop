@@ -23,6 +23,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'favorites',
+    title: 'Favorites - Teslo Shop',
+    loadComponent: () => import('./pages/favorites/favorites.component'),
+    canActivate: [authGuard],
+  },
+  {
     path: 'orders',
     title: 'Orders - Teslo Shop',
     loadComponent: () => import('./pages/orders/orders.component'),

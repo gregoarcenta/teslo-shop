@@ -8,64 +8,35 @@ import {
   OnInit,
   signal,
   viewChild,
-  viewChildren,
 } from '@angular/core';
 import {
   FilterOptions,
   orderBy,
   ProductsService,
 } from '@/core/services/products.service';
-import { Router, RouterLink } from '@angular/router';
-import {
-  CurrencyPipe,
-  IMAGE_LOADER,
-  ImageLoaderConfig,
-  NgOptimizedImage,
-} from '@angular/common';
 import { Meta } from '@angular/platform-browser';
 import { FlowbiteService } from '@/core/services/flowbite.service';
 import { initDropdowns, initTooltips } from 'flowbite';
-import { ToastService } from '@/core/services/toast.service';
-import { AuthService } from '@/core/services/auth.service';
-import { CartService } from '@/core/services/cart.service';
-import { IProduct } from '@/core/models';
 import { ProductsSkeletonComponent } from '@/shared/components/products-skeleton/products-skeleton.component';
+import { ProductsGridComponent } from '@/shared/components/products-grid/products-grid.component';
 
 @Component({
   selector: 'app-home',
-  imports: [
-    RouterLink,
-    NgOptimizedImage,
-    CurrencyPipe,
-    ProductsSkeletonComponent,
-  ],
+  imports: [ProductsSkeletonComponent, ProductsGridComponent],
   templateUrl: './home.component.html',
-  providers: [
-    {
-      provide: IMAGE_LOADER,
-      useValue: (config: ImageLoaderConfig) => {
-        return `https://res.cloudinary.com/dy7luvgd5/image/upload/v1735063243/${config.src}`;
-      },
-    },
-  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class HomeComponent implements OnInit, AfterViewInit {
   // VIEW REFERENCES
+  private readonly productGridElement = viewChild(ProductsGridComponent);
   private readonly sortProdDropdownBtn = viewChild('sortProdDropdownBtn', {
-    read: ElementRef,
-  });
-  private readonly productCardElements = viewChildren('productCard', {
     read: ElementRef,
   });
 
   // SERVICES
   private readonly productsService = inject(ProductsService);
   private readonly flowbiteService = inject(FlowbiteService);
-  private readonly toastService = inject(ToastService);
-  private readonly cartService = inject(CartService);
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+
   private readonly meta = inject(Meta);
 
   // SIGNALS
@@ -76,7 +47,7 @@ export default class HomeComponent implements OnInit, AfterViewInit {
   ]);
 
   isLoading = signal<boolean>(false);
-  isAuthenticated = computed(() => !!this.authService.user());
+
   isShowPlaceholder = computed(() => this.productsService.isShowPlaceholder());
   noProductsFound = computed(() => this.productsService.noProductsFound());
   filterState = computed(() => this.productsService.filterState());
@@ -167,8 +138,12 @@ export default class HomeComponent implements OnInit, AfterViewInit {
 
   scrollTLastElement() {
     setTimeout(() => {
-      const lastVisibleElement =
-        this.productCardElements()[this.products().length - 9];
+      const cards = this.productGridElement()?.productCardElements();
+
+      const lastVisibleElement = !!cards
+        ? cards[this.products().length - 9]
+        : null;
+
       if (lastVisibleElement) {
         lastVisibleElement.nativeElement.scrollIntoView({
           behavior: 'smooth',
@@ -176,25 +151,5 @@ export default class HomeComponent implements OnInit, AfterViewInit {
         });
       }
     }, 100);
-  }
-
-  addToCart(product: IProduct) {
-    if (!this.isAuthenticated()) {
-      this.toastService.showToast(
-        `You need to log in to add products to the cart.`,
-        'error',
-      );
-      this.router.navigate(['/login']).then(() => {});
-      return;
-    }
-
-    if (this.cartService.hasProductStock(product)) {
-      this.cartService.addProduct$.next(product);
-    } else {
-      this.toastService.showToast(
-        `Oops! This product is currently out of stock.`,
-        'warning',
-      );
-    }
   }
 }

@@ -18,6 +18,7 @@ import { CartService } from '@/core/services/cart.service';
 import { IProduct } from '@/core/models';
 import { PaymentService } from '@/core/services/payment.service';
 import { ToastService } from '@/core/services/toast.service';
+import { FavoritesService } from '@/core/services/favorites.service';
 
 @Component({
   selector: 'app-cart',
@@ -38,6 +39,7 @@ export default class CartComponent implements OnInit {
   private readonly cartService = inject(CartService);
   private readonly toastService = inject(ToastService);
   private readonly paymentService = inject(PaymentService);
+  private readonly favoritesService = inject(FavoritesService);
 
   // SIGNALS
   public isLoadingPayment = signal<boolean>(false);
@@ -79,5 +81,13 @@ export default class CartComponent implements OnInit {
         setTimeout(() => (window.location.href = '/'), 5000);
       },
     });
+  }
+
+  isFavorite(product: IProduct): boolean {
+    return this.favoritesService.hasProduct(product);
+  }
+
+  toggleFavorite(product: IProduct) {
+    this.favoritesService.toggleFavorite$.next(product);
   }
 }

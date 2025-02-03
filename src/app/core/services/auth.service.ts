@@ -13,6 +13,7 @@ import { SsrCookieService } from 'ngx-cookie-service-ssr';
 import { ToastService } from '@/core/services/toast.service';
 import { isPlatformBrowser } from '@angular/common';
 import { CartService } from '@/core/services/cart.service';
+import { FavoritesService } from '@/core/services/favorites.service';
 
 export const SERVER_JWT_TOKEN = new InjectionToken<string>('SERVER_JWT_TOKEN');
 export const JWT_TOKEN_NAME = 'teslo_auth_token';
@@ -34,6 +35,7 @@ export class AuthService {
   private readonly cookie = inject(SsrCookieService);
   private readonly toastService = inject(ToastService);
   private readonly cartService = inject(CartService);
+  private readonly favoritesService = inject(FavoritesService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);
 
@@ -85,6 +87,7 @@ export class AuthService {
     this.user.set(user);
     this.cookie.set(JWT_TOKEN_NAME, accessToken);
     this.cartService.getCart$.next();
+    this.favoritesService.getFavorites$.next();
   }
 
   getTokenJwt(): string | null {

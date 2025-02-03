@@ -23,6 +23,7 @@ import { ToastService } from '@/core/services/toast.service';
 import { CartService } from '@/core/services/cart.service';
 import { ProductSkeletonComponent } from '@/shared/components/product-skeleton/product-skeleton.component';
 import { Meta, Title } from '@angular/platform-browser';
+import { FavoritesService } from '@/core/services/favorites.service';
 
 @Component({
   selector: 'app-product',
@@ -46,6 +47,7 @@ export default class ProductComponent {
   private readonly cartService = inject(CartService);
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private readonly favoritesService = inject(FavoritesService);
   private readonly router = inject(Router);
   private readonly meta = inject(Meta);
   private title = inject(Title);
@@ -54,6 +56,9 @@ export default class ProductComponent {
   public product = signal<IProduct | null>(null);
   public currentImage = signal<string>('');
   public isAuthenticated = computed(() => !!this.authService.user());
+  public isFavorite = computed(() =>
+    this.favoritesService.hasProduct(this.product()!),
+  );
 
   constructor() {
     this.route.paramMap
@@ -116,6 +121,10 @@ export default class ProductComponent {
         'warning',
       );
     }
+  }
+
+  toggleFavorite(product: IProduct) {
+    this.favoritesService.toggleFavorite$.next(product);
   }
 
   changeImage(image: string) {
