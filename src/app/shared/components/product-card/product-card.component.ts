@@ -65,6 +65,13 @@ export class ProductCardComponent {
   }
 
   toggleFavorite(product: IProduct) {
+    if (!this.isAuthenticated()) {
+      this.toastService.showToast(
+        `You need to log in to add products to the cart.`,
+        'error',
+      );
+      return;
+    }
     this.favoritesService.toggleFavorite$.next(product);
   }
 }

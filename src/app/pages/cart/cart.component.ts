@@ -19,6 +19,7 @@ import { IProduct } from '@/core/models';
 import { PaymentService } from '@/core/services/payment.service';
 import { ToastService } from '@/core/services/toast.service';
 import { FavoritesService } from '@/core/services/favorites.service';
+import { AuthService } from '@/core/services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -39,12 +40,14 @@ export default class CartComponent implements OnInit {
   private readonly cartService = inject(CartService);
   private readonly toastService = inject(ToastService);
   private readonly paymentService = inject(PaymentService);
+  private readonly authService = inject(AuthService);
   private readonly favoritesService = inject(FavoritesService);
 
   // SIGNALS
   public isLoadingPayment = signal<boolean>(false);
   public cart = computed(() => this.cartService.cart());
   public isLoadingPrice = computed(() => this.cartService.isLoading());
+  public isAuthenticated = computed(() => !!this.authService.user());
 
   ngOnInit(): void {
     this.cartService.getCart$.next();
@@ -88,6 +91,13 @@ export default class CartComponent implements OnInit {
   }
 
   toggleFavorite(product: IProduct) {
+    if (!this.isAuthenticated()) {
+      this.toastService.showToast(
+        `You need to log in to add products to the cart.`,
+        'error',
+      );
+      return;
+    }
     this.favoritesService.toggleFavorite$.next(product);
   }
 }
